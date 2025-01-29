@@ -21,6 +21,9 @@ jobs:
       - run:
           name: Run test for the application
           command: npm run test
+      - run:
+          name: Run build for the application
+          command: npm run build
 workflows:
   build-and-test:
     jobs:
