@@ -7,8 +7,13 @@ export const useCalculate = () => {
     return a - b
   }
 
+  const multiple = (a: number, b: number) => {
+    return a * b
+  }
+
   return {
     add,
-    subtract
+    subtract,
+    multiple
   }
 }
