@@ -6,16 +6,16 @@ executors:
       - image: infrastructureascode/aws-cli
         environment:
           AWS_DEFAULT_REGION: ap-northeast-1
-    working_directory: /home/circleci/example
+    working_directory: ~/dist
 
   nodejs_container:
     docker:
       - image: circleci/node:16.12
-    working_directory: /home/circleci/example
+    working_directory: ~/dist
 
 jobs:
   build-and-test:
-    working_directory: ~/project
+    working_directory: ~/dist
     docker:
       - image: cimg/node:21.6.0
     steps:
@@ -34,7 +34,7 @@ jobs:
           name: Run build for the application
           command: npm run build
       - persist_to_workspace:
-          root: /home/circleci/example
+          root: ~/dist
           paths:
             - ./*
   deploy:
@@ -43,13 +43,13 @@ jobs:
       AWS_S3_BUCKET_NAME: "matsui-cd-test"
     steps:
       - attach_workspace:
-          at: /home/circleci/sample
+          at: ~/dist
       - run:
           name: "Deploy to S3."
           command: |
             export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY}
             export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-            aws s3 sync /home/circleci/example/public s3://${AWS_S3_BUCKET_NAME}/ --exact-timestamps --delete
+            aws s3 sync ~/dist s3://${AWS_S3_BUCKET_NAME}/ --exact-timestamps --delete
 
 workflows:
   build-and-deploy:
