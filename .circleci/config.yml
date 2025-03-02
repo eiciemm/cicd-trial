@@ -1,4 +1,18 @@
 version: 2.1
+
+executors:
+  awscli_container:
+    docker:
+      - image: infrastructureascode/aws-cli
+        environment:
+          AWS_DEFAULT_REGION: ap-northeast-1
+    working_directory: /home/circleci/example
+
+  nodejs_container:
+    docker:
+      - image: circleci/node:16.12
+    working_directory: /home/circleci/example
+
 jobs:
   build-and-test:
     working_directory: ~/project
@@ -19,7 +33,24 @@ jobs:
       - run:
           name: Run build for the application
           command: npm run build
+  deploy:
+    executor: awscli_container
+    environment:
+      AWS_S3_BUCKET_NAME: "matsui-cd-test"
+    steps:
+      - attach_workspace:
+          at: /home/circleci/sample
+      - run:
+          name: "Deploy to S3."
+          command: |
+            export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY}
+            export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            aws s3 sync /home/circleci/example/public s3://${AWS_S3_BUCKET_NAME}/ --exact-timestamps --delete
+
 workflows:
-  build-and-test:
+  build-and-deploy:
     jobs:
       - build-and-test
+      - deploy
+        requires:
+          - build-and-test
