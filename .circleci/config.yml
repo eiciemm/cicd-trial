@@ -6,12 +6,12 @@ executors:
       - image: infrastructureascode/aws-cli
         environment:
           AWS_DEFAULT_REGION: ap-northeast-1
-    working_directory: ~/project
+    working_directory: /home/circleci/example
 
   nodejs_container:
     docker:
       - image: circleci/node:16.12
-    working_directory: ~/project
+    working_directory: /home/circleci/example
 
 jobs:
   build-and-test:
@@ -33,13 +33,17 @@ jobs:
       - run:
           name: Run build for the application
           command: npm run build
+      - persist_to_workspace:
+          root: /home/circleci/example
+          paths:
+            - ./*
   deploy:
     executor: awscli_container
     environment:
       AWS_S3_BUCKET_NAME: "matsui-cd-test"
     steps:
       - attach_workspace:
-          at: ~/project
+          at: /home/circleci/sample
       - run:
           name: "Deploy to S3."
           command: |
