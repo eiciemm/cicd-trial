@@ -51,6 +51,8 @@ jobs:
       - run:
           name: Deploy to S3
           command: |
+            export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY}
+            export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
             aws s3 sync dist s3://${AWS_S3_BUCKET_NAME}/ --exact-timestamps --delete
 
 workflows:
