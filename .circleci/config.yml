@@ -44,8 +44,8 @@ jobs:
       AWS_S3_BUCKET_NAME: "matsui-cd-test"
     steps:
       - run:
-          name: Install tar
-          command: yum install -y tar
+          name: Install tar and gzip
+          command: yum install -y tar gzip
       - attach_workspace:
           at: ~/project
       - run:
